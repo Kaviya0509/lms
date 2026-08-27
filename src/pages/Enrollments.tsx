@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import DataTable from '../components/ui/DataTable';
 import Badge from '../components/ui/Badge';
 import { mockEnrollments } from '../data/mockData';
-import type { Enrollment } from '../types';
+interface Enrollment {
+  id: string;
+  studentName: string;
+  courseName: string;
+  enrolledAt: string;
+  progress: number;
+  status: 'active' | 'completed' | 'dropped';
+}
 
 const ProgressBar: React.FC<{ value: number }> = ({ value }) => (
   <div className="flex items-center gap-2">
