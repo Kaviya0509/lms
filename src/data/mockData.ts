@@ -1,4 +1,45 @@
-import type { User, Course, Enrollment, DashboardStats } from '../types';
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'instructor' | 'student';
+  status: 'active' | 'inactive' | 'suspended';
+  joinedAt: string;
+  coursesEnrolled: number;
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  instructor: string;
+  category: string;
+  status: 'published' | 'draft' | 'archived';
+  studentsCount: number;
+  price: number;
+  rating: number;
+  createdAt: string;
+  duration: string;
+}
+
+export interface Enrollment {
+  id: string;
+  studentName: string;
+  courseName: string;
+  enrolledAt: string;
+  progress: number;
+  status: 'active' | 'completed' | 'dropped';
+}
+
+export interface DashboardStats {
+  totalUsers: number;
+  totalCourses: number;
+  totalRevenue: number;
+  activeEnrollments: number;
+  userGrowth: number;
+  revenueGrowth: number;
+  courseGrowth: number;
+  enrollmentGrowth: number;
+}
 
 export const mockStats: DashboardStats = {
   totalUsers: 12847,

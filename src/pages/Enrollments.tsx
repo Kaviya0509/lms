@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import DataTable from '../components/ui/DataTable';
 import Badge from '../components/ui/Badge';
-import { mockEnrollments } from '../data/mockData';
-import type { Enrollment } from '../types';
+import { mockEnrollments, type Enrollment } from '../data/mockData';
 
 const ProgressBar: React.FC<{ value: number }> = ({ value }) => (
   <div className="flex items-center gap-2">
