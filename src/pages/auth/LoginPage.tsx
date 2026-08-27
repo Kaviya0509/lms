@@ -8,9 +8,9 @@ import { Shield, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck } from 'lucide
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { loginSuccess } from '../../store/slices/authSlice';
 import { InputField } from '../../components/forms';
-import { ThemeSwitcher } from '../../components/ThemeSwitcher';
 
 import loginBg from '../../assets/login_background.png';
+import logoImg from '../../assets/logo.png';
 
 const schema = z.object({
   email:    z.string().email('Enter a valid email address'),
@@ -54,14 +54,8 @@ const LoginPage: React.FC = () => {
       <div className="hidden lg:flex flex-[1.4] flex-col justify-between relative z-10 p-10 xl:p-14 h-full">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
-            <div className="text-primary-500 flex-shrink-0">
-              <svg width="44" height="44" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 xl:w-11 xl:h-11">
-                <path d="M20 7C20.8 11.5 21.8 19.5 20 29.5C18.2 19.5 19.2 11.5 20 7Z" fill="var(--color-primary-500)" />
-                <path d="M20 29.5C16.5 26.5 13.5 20 14 14.5C16 17.5 17.5 22.5 20 24.5V29.5Z" fill="var(--color-primary-500)" />
-                <path d="M20 29.5C23.5 26.5 26.5 20 26 14.5C24 17.5 22.5 22.5 20 24.5V29.5Z" fill="var(--color-primary-500)" />
-                <path d="M20 29.5C12.5 25.5 10 19 11 13.5C12.5 16.5 14.5 19.5 17 21.5L20 29.5Z" fill="var(--color-primary-500)" opacity="0.85" />
-                <path d="M20 29.5C27.5 25.5 30 19 29 13.5C27.5 16.5 25.5 19.5 23 21.5L20 29.5Z" fill="var(--color-primary-500)" opacity="0.85" />
-              </svg>
+            <div className="w-10 h-10 xl:w-11 xl:h-11 overflow-hidden flex-shrink-0 flex items-center">
+              <img src={logoImg} alt="LMS Logo" className="max-w-none" style={{ width: '396.875%', height: '100%', objectFit: 'cover', objectPosition: 'left' }} />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900 leading-none tracking-tight font-serif">LMS</h1>
@@ -69,11 +63,7 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-primary-500/25 bg-primary-50 text-primary-500 text-[10px] font-bold uppercase tracking-widest shadow-sm">
-              <Shield size={11} strokeWidth={2.5} /> ADMIN ACCESS
-            </div>
-          </div>
+
 
           <div>
             <h2 className="text-4xl xl:text-5xl font-serif text-[#18130F] leading-[1.15] tracking-tight mb-3">
@@ -81,7 +71,7 @@ const LoginPage: React.FC = () => {
               Empower <span className="text-primary-500">People.</span>
             </h2>
             <div className="w-14 h-[3px] bg-primary-500 rounded-full mb-4"></div>
-            <p className="text-slate-600 text-[11px] xl:text-sm max-w-none leading-relaxed font-semibold whitespace-nowrap">
+            <p className="text-slate-600 text-xs xl:text-base max-w-none leading-relaxed font-semibold whitespace-nowrap">
               A unified workspace to manage trainers, trainees, courses, batches, enrollments, assessments, attendance and certificates.
             </p>
           </div>
@@ -96,14 +86,8 @@ const LoginPage: React.FC = () => {
           className="w-full max-w-[400px] mx-auto"
         >
           <div className="lg:hidden flex items-center justify-center gap-2.5 mb-6">
-            <div className="text-primary-500">
-              <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-                <path d="M20 7C20.8 11.5 21.8 19.5 20 29.5C18.2 19.5 19.2 11.5 20 7Z" fill="var(--color-primary-500)" />
-                <path d="M20 29.5C16.5 26.5 13.5 20 14 14.5C16 17.5 17.5 22.5 20 24.5V29.5Z" fill="var(--color-primary-500)" />
-                <path d="M20 29.5C23.5 26.5 26.5 20 26 14.5C24 17.5 22.5 22.5 20 24.5V29.5Z" fill="var(--color-primary-500)" />
-                <path d="M20 29.5C12.5 25.5 10 19 11 13.5C12.5 16.5 14.5 19.5 17 21.5L20 29.5Z" fill="var(--color-primary-500)" opacity="0.85" />
-                <path d="M20 29.5C27.5 25.5 30 19 29 13.5C27.5 16.5 25.5 19.5 23 21.5L20 29.5Z" fill="var(--color-primary-500)" opacity="0.85" />
-              </svg>
+            <div className="w-8 h-8 overflow-hidden flex-shrink-0 flex items-center">
+              <img src={logoImg} alt="LMS Logo" className="max-w-none" style={{ width: '396.875%', height: '100%', objectFit: 'cover', objectPosition: 'left' }} />
             </div>
             <div>
               <h1 className="text-lg font-bold text-slate-900 leading-none font-serif">LMS</h1>
@@ -192,7 +176,7 @@ const LoginPage: React.FC = () => {
         </motion.div>
       </div>
 
-      <ThemeSwitcher />
+
     </div>
   );
 };
