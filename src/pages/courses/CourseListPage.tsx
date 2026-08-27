@@ -29,7 +29,6 @@ const CourseListPage: React.FC<CourseListPageProps> = ({ initialMode }) => {
   const [deleteId,   setDeleteId]   = useState<string | null>(null);
   const [viewCourse, setViewCourse] = useState<Course | null>(null);
 
-  React.useEffect(() => { setModeFilter(initialMode ?? 'all'); }, [initialMode]);
 
   const filtered = courses.filter(c => {
     if (modeFilter === 'all')     return true;

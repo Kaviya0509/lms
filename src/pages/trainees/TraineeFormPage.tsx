@@ -36,7 +36,8 @@ const TraineeFormPage: React.FC = () => {
   const [avatar, setAvatar] = useState<string>('');
 
   const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<TraineeForm>({
-    resolver: zodResolver(traineeSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(traineeSchema) as any,
     defaultValues: { type: 'fresher', status: 'active' },
   });
 

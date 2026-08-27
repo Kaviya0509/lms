@@ -24,6 +24,8 @@ const batchSchema = z.object({
 });
 type BatchForm = z.infer<typeof batchSchema>;
 
+const generateBatchId = () => `batch-${Date.now()}`;
+
 const BatchFormPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -36,7 +38,8 @@ const BatchFormPage: React.FC = () => {
   const isEdit = !!existing;
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<BatchForm>({
-    resolver: zodResolver(batchSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(batchSchema) as any,
     defaultValues: { status: 'upcoming', capacity: 20 },
   });
 
@@ -57,7 +60,7 @@ const BatchFormPage: React.FC = () => {
     const trainer = trainers.find(t => t.id === data.trainerId);
 
     const batch: Batch = {
-      id: existing?.id ?? `batch-${Date.now()}`,
+      id: existing?.id ?? generateBatchId(),
       name: data.name,
       courseId: data.courseId,
       courseName: course?.name ?? existing?.courseName ?? '',

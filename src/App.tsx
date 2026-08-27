@@ -47,9 +47,9 @@ const App: React.FC = () => {
           <Route path="/trainees/add" element={<TraineeFormPage />} />
           <Route path="/trainees/edit/:id" element={<TraineeFormPage />} />
 
-          <Route path="/courses" element={<CourseListPage />} />
-          <Route path="/courses/online" element={<CourseListPage initialMode="online" />} />
-          <Route path="/courses/offline" element={<CourseListPage initialMode="offline" />} />
+          <Route path="/courses" element={<CourseListPage key="all" />} />
+          <Route path="/courses/online" element={<CourseListPage key="online" initialMode="online" />} />
+          <Route path="/courses/offline" element={<CourseListPage key="offline" initialMode="offline" />} />
           <Route path="/courses/create" element={<CourseCreatePage />} />
           <Route path="/courses/edit/:id" element={<CourseCreatePage />} />
 

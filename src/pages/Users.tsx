@@ -10,7 +10,15 @@ import Modal from '../components/ui/Modal';
 import { InputField } from '../components/forms';
 import { SelectField } from '../components/forms';
 import { mockUsers } from '../data/mockData';
-import type { User } from '../types';
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'instructor' | 'student';
+  status: 'active' | 'inactive' | 'suspended';
+  joinedAt: string;
+  coursesEnrolled: number;
+}
 
 const userSchema = z.object({
   name:  z.string().min(2, 'Name must be at least 2 characters').max(60, 'Name too long'),
@@ -33,6 +41,8 @@ const statusColors: Record<string, 'success' | 'warning' | 'danger'> = {
   inactive:  'warning',
   suspended: 'danger',
 };
+
+const generateUserId = () => String(Date.now());
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>(mockUsers);
@@ -69,7 +79,7 @@ const Users: React.FC = () => {
       setSuccessMsg('User updated successfully!');
     } else {
       const newUser: User = {
-        id: String(Date.now()),
+        id: generateUserId(),
         name: data.name,
         email: data.email,
         role: data.role,

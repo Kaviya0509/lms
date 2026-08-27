@@ -19,6 +19,8 @@ const locationSchema = z.object({
 });
 type LocationForm = z.infer<typeof locationSchema>;
 
+const generateLocationId = () => `location-${Date.now()}`;
+
 const LocationFormPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -45,7 +47,7 @@ const LocationFormPage: React.FC = () => {
     await new Promise(r => setTimeout(r, 600));
 
     const location: Location = {
-      id: existing?.id ?? `location-${Date.now()}`,
+      id: existing?.id ?? generateLocationId(),
       name: data.name,
       address: data.address,
       city: data.city,

@@ -2,7 +2,6 @@ import React from 'react';
 import { Download, Plus, Users, BookOpen, Calendar, ArrowRight, MoreVertical } from 'lucide-react';
 import ReactApexChart from 'react-apexcharts';
 import StatCard from '../components/ui/StatCard';
-import { mockStats, enrollmentData } from '../data/mockData';
 
 const chartOptions = {
   chart: { toolbar: { show: false }, background: 'transparent', sparkline: { enabled: false } },

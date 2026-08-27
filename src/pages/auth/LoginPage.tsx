@@ -19,6 +19,8 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
+const generateToken = () => 'mock_jwt_token_' + Date.now();
+
 const LoginPage: React.FC = () => {
   const [showPw, setShowPw] = React.useState(false);
   const dispatch = useAppDispatch();
@@ -36,7 +38,7 @@ const LoginPage: React.FC = () => {
     }
     dispatch(loginSuccess({
       user: { id: 'admin1', name: 'Kaviyapriya Perumal', email: data.email, role: 'admin' },
-      token: 'mock_jwt_token_' + Date.now(),
+      token: generateToken(),
     }));
     navigate('/');
   };

@@ -10,7 +10,18 @@ import Modal from '../components/ui/Modal';
 import { InputField } from '../components/forms';
 import { SelectField } from '../components/forms';
 import { mockCourses } from '../data/mockData';
-import type { Course } from '../types';
+interface Course {
+  id: string;
+  title: string;
+  instructor: string;
+  category: string;
+  status: 'published' | 'draft' | 'archived';
+  price: number;
+  duration: string;
+  studentsCount: number;
+  rating: number;
+  createdAt: string;
+}
 
 const courseSchema = z.object({
   title:      z.string().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
@@ -39,6 +50,8 @@ const categoryOptions = [
   { value: 'Mobile', label: 'Mobile' },
   { value: 'DevOps', label: 'DevOps' },
 ];
+
+const generateCourseId = () => String(Date.now());
 
 const Courses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>(mockCourses);
@@ -81,7 +94,7 @@ const Courses: React.FC = () => {
       showSuccess('Course updated successfully!');
     } else {
       const newCourse: Course = {
-        id: String(Date.now()),
+        id: generateCourseId(),
         title: data.title,
         instructor: data.instructor,
         category: data.category,
