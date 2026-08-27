@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ImageUpload from '../../components/common/ImageUpload';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -24,6 +24,8 @@ const traineeSchema = z.object({
 });
 type TraineeForm = z.infer<typeof traineeSchema>;
 
+const generateTraineeId = () => `trainee-${Date.now()}`;
+
 const TraineeFormPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -35,13 +37,13 @@ const TraineeFormPage: React.FC = () => {
 
   const [avatar, setAvatar] = useState<string>('');
 
-  const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<TraineeForm>({
+  const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<TraineeForm>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(traineeSchema) as any,
     defaultValues: { type: 'fresher', status: 'active' },
   });
 
-  const typeWatch = watch('type');
+  const typeWatch = useWatch({ control, name: 'type' });
 
   useEffect(() => {
     if (existing) {
@@ -50,6 +52,7 @@ const TraineeFormPage: React.FC = () => {
         type: existing.type, company: existing.company ?? '', experience: existing.experience ?? 0,
         location: existing.location, status: existing.status
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAvatar(existing.avatar ?? '');
     }
   }, [existing, reset]);
@@ -58,7 +61,7 @@ const TraineeFormPage: React.FC = () => {
     await new Promise(r => setTimeout(r, 600));
 
     const trainee: Trainee = {
-      id: existing?.id ?? `trainee-${Date.now()}`,
+      id: existing?.id ?? generateTraineeId(),
       name: data.name,
       email: data.email,
       mobile: data.mobile,

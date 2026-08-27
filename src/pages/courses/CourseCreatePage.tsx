@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -184,13 +184,17 @@ const CourseCreatePage: React.FC = () => {
     { value: 'Mobile', label: 'Mobile Development' },
   ];
 
-  const cw = commonForm.watch('mode');
+  const cw = useWatch({ control: commonForm.control, name: 'mode' });
+  const trainerIdWatch = useWatch({ control: commonForm.control, name: 'trainerId' });
+  const hasAssessmentWatch = useWatch({ control: commonForm.control, name: 'hasAssessment' });
+  const hasCertificateWatch = useWatch({ control: commonForm.control, name: 'hasCertificate' });
+
   const publishChecks = [
     { label: 'Course information complete', done: true },
-    { label: 'Trainer assigned', done: !!commonForm.watch('trainerId') },
+    { label: 'Trainer assigned', done: !!trainerIdWatch },
     { label: 'Delivery mode configured', done: step >= 2 },
-    { label: `Assessment ${commonForm.watch('hasAssessment') ? 'enabled' : 'skipped'}`, done: true },
-    { label: `Certificate ${commonForm.watch('hasCertificate') ? 'configured' : 'not required'}`, done: true },
+    { label: `Assessment ${hasAssessmentWatch ? 'enabled' : 'skipped'}`, done: true },
+    { label: `Certificate ${hasCertificateWatch ? 'configured' : 'not required'}`, done: true },
   ];
 
   return (
