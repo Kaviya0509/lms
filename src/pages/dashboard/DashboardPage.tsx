@@ -43,6 +43,7 @@ const DashboardPage: React.FC = () => {
   const s = mockDashboardStats;
   const navigate = useNavigate();
   const user = useAppSelector(st => st.auth.user);
+  const trainees = useAppSelector(st => st.trainees.items);
   const firstName = (user?.name ?? 'Admin').split(' ')[0];
   const [enrollmentRange, setEnrollmentRange] = React.useState<EnrollmentRange>('month');
 
@@ -240,18 +241,25 @@ const DashboardPage: React.FC = () => {
             </button>
           </div>
           <div className="space-y-2">
-            {mockEnrollments.slice(0, 4).map(e => (
-              <div key={e.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
-                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${getAvatarColor(e.traineeName)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm`}>
-                  {getInitials(e.traineeName)}
+            {mockEnrollments.slice(0, 4).map(e => {
+              const trainee = trainees.find(t => t.id === e.traineeId);
+              return (
+                <div key={e.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
+                  {trainee?.avatar ? (
+                    <img src={trainee.avatar} alt={e.traineeName} className="w-9 h-9 rounded-xl object-cover flex-shrink-0 border border-slate-100 shadow-sm" />
+                  ) : (
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${getAvatarColor(e.traineeName)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm`}>
+                      {getInitials(e.traineeName)}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 truncate">{e.traineeName}</p>
+                    <p className="text-xs text-slate-400 truncate">{e.courseName}</p>
+                  </div>
+                  <StatusBadge status={e.status} dot />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 truncate">{e.traineeName}</p>
-                  <p className="text-xs text-slate-400 truncate">{e.courseName}</p>
-                </div>
-                <StatusBadge status={e.status} dot />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
