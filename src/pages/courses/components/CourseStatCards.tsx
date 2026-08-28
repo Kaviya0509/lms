@@ -23,7 +23,7 @@ const CourseStatCards: React.FC<Props> = ({ courses }) => {
       {cards.map(card => (
         <div key={card.label} className="flex items-start justify-between px-4 py-4 rounded-2xl border border-slate-100 bg-white shadow-sm hover:border-slate-200 hover:-translate-y-0.5 transition-all duration-300 group">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{card.label}</p>
+            <p className="text-xs font-semibold tracking-wider text-slate-500">{card.label}</p>
             <p className="text-2xl font-bold text-slate-900 mt-1.5 tracking-tight">{card.value}</p>
           </div>
           <div className={`p-3 rounded-xl ${card.iconBg} group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ml-3`}>

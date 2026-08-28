@@ -19,20 +19,24 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, iconBg = 'bg-pr
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4, ease: 'easeOut' }}
-      className="bg-white border border-slate-100 shadow-sm rounded-2xl p-5 hover:border-slate-200 hover:-translate-y-0.5 transition-all duration-300 group"
+      className="bg-white border border-slate-100 shadow-sm rounded-2xl p-5 hover:border-slate-200 hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between h-full"
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">{title}</p>
-          <p className="text-2xl font-bold text-slate-900 mt-1.5 tracking-tight">{value}</p>
-          {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+      <div className="flex items-stretch justify-between flex-1 w-full">
+        <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
+          <div>
+            <p className="text-xs font-semibold tracking-wider text-slate-500 truncate">{title}</p>
+            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+          </div>
+          <p className="text-2xl font-bold text-slate-900 mt-2 tracking-tight">{value}</p>
         </div>
-        <div className={`p-3 rounded-xl ${iconBg} group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ml-3`}>
-          {icon}
+        <div className="flex flex-col justify-start ml-3">
+          <div className={`p-3 rounded-xl ${iconBg} group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+            {icon}
+          </div>
         </div>
       </div>
       {growth !== undefined && (
-        <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-50">
+        <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-slate-50 flex-shrink-0">
           {isPositive ? <TrendingUp size={13} className="text-emerald-600" /> : <TrendingDown size={13} className="text-red-600" />}
           <span className={`text-xs font-bold ${isPositive ? 'text-emerald-600' : 'text-red-600'}`}>
             {isPositive ? '+' : ''}{growth}%

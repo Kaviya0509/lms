@@ -179,6 +179,21 @@ export interface AttendanceRecord {
   flagged: boolean;
 }
 
+export interface TrainerAttendanceRecord {
+  id: string;
+  trainerId: string;
+  trainerName: string;
+  batchId: string;
+  batchName: string;
+  sessionId: string;
+  sessionDate: string;
+  status: 'present' | 'absent' | 'late';
+  percentage: number;
+  required: number;
+  flagged: boolean;
+}
+
+
 export interface Assessment {
   id: string;
   title: string;

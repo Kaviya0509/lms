@@ -1,6 +1,6 @@
 import type {
   DashboardStats, Trainer, Trainee, Course, Batch, Enrollment,
-  AttendanceRecord, Assessment, Certificate, Location, Category
+  AttendanceRecord, TrainerAttendanceRecord, Assessment, Certificate, Location, Category
 } from '../types';
 
 export const mockDashboardStats: DashboardStats = {
@@ -19,9 +19,9 @@ export const mockTrainers: Trainer[] = [
 ];
 
 export const mockTrainees: Trainee[] = [
-  { id: 'tr1', name: 'Aarav Sharma', email: 'aarav@email.com', mobile: '9811111111', type: 'fresher', location: 'Chennai', status: 'active', enrolledCourses: ['c_claude_assoc'], assignedBatch: 'b_claude_assoc_off', overallProgress: 72, attendancePercentage: 88, avatar: 'https://randomuser.me/api/portraits/men/11.jpg', joinedAt: '2024-01-15' },
+  { id: 'tr1', name: 'Aarav Sharma', email: 'aarav@email.com', mobile: '9811111111', type: 'fresher', location: 'Chennai', status: 'active', enrolledCourses: ['c_claude_assoc'], assignedBatch: 'b_claude_assoc_on', overallProgress: 72, attendancePercentage: 88, avatar: 'https://randomuser.me/api/portraits/men/11.jpg', joinedAt: '2024-01-15' },
   { id: 'tr2', name: 'Priya Nair', email: 'priya@email.com', mobile: '9822222222', type: 'professional', company: 'TCS', experience: 3, location: 'Bangalore', status: 'active', enrolledCourses: ['c_claude_dev'], assignedBatch: 'b_claude_dev_on', overallProgress: 45, attendancePercentage: 62, avatar: 'https://randomuser.me/api/portraits/women/21.jpg', joinedAt: '2024-02-20' },
-  { id: 'tr3', name: 'Karthik Raja', email: 'karthik@email.com', mobile: '9833333333', type: 'fresher', location: 'Hyderabad', status: 'active', enrolledCourses: ['c_claude_assoc'], assignedBatch: 'b_claude_assoc_off', overallProgress: 91, attendancePercentage: 96, avatar: 'https://randomuser.me/api/portraits/men/52.jpg', joinedAt: '2024-01-15' },
+  { id: 'tr3', name: 'Karthik Raja', email: 'karthik@email.com', mobile: '9833333333', type: 'fresher', location: 'Hyderabad', status: 'active', enrolledCourses: ['c_claude_assoc'], assignedBatch: 'b_claude_assoc_on', overallProgress: 91, attendancePercentage: 96, avatar: 'https://randomuser.me/api/portraits/men/52.jpg', joinedAt: '2024-01-15' },
   { id: 'tr4', name: 'Ananya Reddy', email: 'ananya@email.com', mobile: '9844444444', type: 'professional', company: 'Wipro', experience: 5, location: 'Chennai', status: 'pending', enrolledCourses: ['c_claude_arch_prof'], overallProgress: 0, attendancePercentage: 0, avatar: 'https://randomuser.me/api/portraits/women/33.jpg', joinedAt: '2024-08-01' },
   { id: 'tr5', name: 'Vijay Kumar', email: 'vijay@email.com', mobile: '9855555555', type: 'fresher', location: 'Mumbai', status: 'active', enrolledCourses: ['c_claude_arch_found'], assignedBatch: 'b_claude_arch_found_off', overallProgress: 30, attendancePercentage: 55, avatar: 'https://randomuser.me/api/portraits/men/61.jpg', joinedAt: '2024-03-10' },
   { id: 'tr6', name: 'Lakshmi Menon', email: 'lakshmi@email.com', mobile: '9866666666', type: 'professional', company: 'Infosys', experience: 2, location: 'Pune', status: 'active', enrolledCourses: ['c_claude_dev'], assignedBatch: 'b_claude_dev_on', overallProgress: 68, attendancePercentage: 80, avatar: 'https://randomuser.me/api/portraits/women/58.jpg', joinedAt: '2024-02-20' },
@@ -98,3 +98,18 @@ export const enrollmentTrend = { labels: ['Jan','Feb','Mar','Apr','May','Jun','J
 export const attendanceOverview = { labels: ['FSWD Batch', 'MLP Online', 'CEH Batch', 'UI/UX Boot'], datasets: [{ label: 'Avg Attendance %', data: [84, 71, 92, 78], backgroundColor: ['#6366f1','#10b981','#f59e0b','#8b5cf6'] }] };
 export const assessmentPerformance = { labels: ['0-40', '40-60', '60-80', '80-100'], datasets: [{ label: 'Trainees', data: [12, 28, 84, 143], backgroundColor: ['#ef4444','#f59e0b','#6366f1','#10b981'] }] };
 export const courseDistribution = { labels: ['Web Dev', 'Data Science', 'Design', 'Backend', 'Security', 'Cloud'], datasets: [{ data: [18, 12, 8, 15, 7, 10], backgroundColor: ['#6366f1','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4'] }] };
+
+export const mockTrainerAttendance: TrainerAttendanceRecord[] = [
+  { id: 'ta1', trainerId: 't1', trainerName: 'Dr. Arun Kumar', batchId: 'b_claude_dev_on', batchName: 'CLD-DEV Online Sep26', sessionId: 's_dev_on_1', sessionDate: '2026-09-06', status: 'present', percentage: 95, required: 90, flagged: false },
+  { id: 'ta2', trainerId: 't2', trainerName: 'Meena Subramaniam', batchId: 'b_claude_assoc_on', batchName: 'CLD-ASC Online Aug26', sessionId: 's_assoc_on_1', sessionDate: '2026-09-02', status: 'present', percentage: 100, required: 90, flagged: false },
+  { id: 'ta3', trainerId: 't5', trainerName: 'Suresh Nataraj', batchId: 'b_claude_arch_prof_off', batchName: 'CLD-ARP Chennai Nov26', sessionId: 's_arch_prof_off_1', sessionDate: '2026-11-10', status: 'absent', percentage: 75, required: 90, flagged: true },
+  { id: 'ta4', trainerId: 't1', trainerName: 'Dr. Arun Kumar', batchId: 'b_claude_arch_found_off', batchName: 'CLD-ARF Hyderabad Oct26', sessionId: 's_arch_found_off_1', sessionDate: '2026-10-16', status: 'late', percentage: 88, required: 90, flagged: false },
+];
+
+export const mockTrainerEnrollments: Enrollment[] = [
+  { id: 'te1', traineeId: 't1', traineeName: 'Dr. Arun Kumar', traineeEmail: 'arun@lms.com', courseId: 'c_claude_dev', courseName: 'Claude Certified Developer - Foundational Level', courseMode: 'online', batchId: 'b_claude_dev_on', batchName: 'CLD-DEV Online Sep26', enrolledAt: '2026-08-25', status: 'approved', progress: 100, approvedAt: '2026-08-25', approvedBy: 'Admin' },
+  { id: 'te2', traineeId: 't2', traineeName: 'Meena Subramaniam', traineeEmail: 'meena@lms.com', courseId: 'c_claude_assoc', courseName: 'Claude Certified Associate - Foundational Level', courseMode: 'offline', batchId: 'b_claude_assoc_off', batchName: 'CLD-ASC Chennai Sep26', enrolledAt: '2026-08-24', status: 'approved', progress: 100, approvedAt: '2026-08-24', approvedBy: 'Admin' },
+  { id: 'te3', traineeId: 't5', traineeName: 'Suresh Nataraj', traineeEmail: 'suresh@lms.com', courseId: 'c_claude_arch_prof', courseName: 'Claude Certified Architect - Professional Level', courseMode: 'offline', batchId: 'b_claude_arch_prof_off', batchName: 'CLD-ARP Chennai Nov26', enrolledAt: '2026-08-25', status: 'pending', progress: 0 },
+];
+
+

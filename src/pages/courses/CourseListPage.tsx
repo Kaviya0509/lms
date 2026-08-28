@@ -62,8 +62,8 @@ const CourseListPage: React.FC<CourseListPageProps> = ({ initialMode }) => {
       key: 'mode', label: 'Mode',
       render: (_, r) => (
         <div className="flex items-center gap-1.5">
-          {(r.mode === 'online'  || r.mode === 'both') && <StatusBadge status="online" />}
-          {(r.mode === 'offline' || r.mode === 'both') && <StatusBadge status="offline" label="offline" />}
+          {((r.mode === 'online' || r.mode === 'both') && modeFilter !== 'offline') && <StatusBadge status="online" />}
+          {((r.mode === 'offline' || r.mode === 'both') && modeFilter !== 'online') && <StatusBadge status="offline" label="offline" />}
         </div>
       ),
     },

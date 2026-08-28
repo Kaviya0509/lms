@@ -47,6 +47,13 @@ const DashboardPage: React.FC = () => {
   const firstName = (user?.name ?? 'Admin').split(' ')[0];
   const [enrollmentRange, setEnrollmentRange] = React.useState<EnrollmentRange>('month');
 
+  const greeting = (() => {
+    const hrs = new Date().getHours();
+    if (hrs < 12) return 'Good morning';
+    if (hrs < 17) return 'Good afternoon';
+    return 'Good evening';
+  })();
+
   const trend = enrollmentTrendData[enrollmentRange];
   const enrollmentChart = {
     series: [
@@ -127,7 +134,7 @@ const DashboardPage: React.FC = () => {
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Admin Dashboard</p>
             <h1 className="text-2xl font-extrabold text-slate-900 mt-0.5">
-              Welcome back, {firstName}! <span>👋</span>
+              {greeting}, {firstName}! <span>👋</span>
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">Here's what's happening across your LMS today.</p>
           </div>

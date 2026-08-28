@@ -241,11 +241,11 @@ const Header: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => { setProfileOpen(o => !o); setNotifOpen(false); setSearchOpen(false); }}
-            className="flex items-center gap-2 sm:gap-3 pl-1 pr-1 py-1 hover:bg-slate-50 rounded-full transition-all border border-transparent hover:border-slate-200"
+            className="flex items-center gap-2.5 pl-3 pr-1 py-1 hover:bg-slate-50 rounded-full transition-all border border-transparent hover:border-slate-200"
           >
-            <div className="hidden md:block text-right">
+            <div className="hidden md:block flex flex-col items-end text-right">
               <p className="text-slate-900 text-sm font-semibold leading-none">{user?.name ?? 'Elena Rodriguez'}</p>
-              <p className="text-slate-500 text-[11px] mt-1">Administrator</p>
+              <p className="text-slate-500 text-[11px] mt-1.5">Administrator</p>
             </div>
             <div className="w-9 h-9 rounded-full bg-primary-100 border-2 border-white shadow-sm flex items-center justify-center text-primary-600 text-sm font-bold flex-shrink-0">
               {getInitials(user?.name ?? 'Elena Rodriguez')}

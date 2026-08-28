@@ -3,6 +3,7 @@ import { ChevronUp, ChevronDown, Search, ChevronLeft, ChevronRight, SlidersHoriz
 import type { TableColumn } from '../../types';
 import LoadingSpinner from './LoadingSpinner';
 import EmptyState from './EmptyState';
+import Select from './Select';
 
 interface DataTableProps<T extends Record<string, unknown>> {
   columns: TableColumn<T>[];
@@ -143,19 +144,16 @@ function DataTable<T extends Record<string, unknown>>({
                   return (
                     <td key={`filter-${String(col.key)}`} className="px-5 py-2">
                       {col.filterOptions ? (
-                        <select
+                        <Select
                           value={colFilters[String(col.key)] || ''}
-                          onChange={e => {
-                            setColFilters(prev => ({ ...prev, [String(col.key)]: e.target.value }));
+                          onChange={val => {
+                            setColFilters(prev => ({ ...prev, [String(col.key)]: val }));
                             setPage(1);
                           }}
-                          className="w-full bg-white border border-slate-200 shadow-sm rounded-lg px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer"
-                        >
-                          <option value="">All</option>
-                          {col.filterOptions.map(o => (
-                            <option key={o.value} value={o.value}>{o.label}</option>
-                          ))}
-                        </select>
+                          options={[{ value: '', label: 'All' }, ...col.filterOptions]}
+                          placeholder="All"
+                          className="w-full"
+                        />
                       ) : (
                         <input
                           type="text"

@@ -54,14 +54,14 @@ const TrainerListPage: React.FC = () => {
       ),
     },
     {
-      key: 'email', label: 'Email', className: 'min-w-[180px]',
+      key: 'email', label: 'Email', className: 'min-w-[220px]',
       render: (v) => <span className="text-xs text-slate-600 font-medium whitespace-nowrap">{String(v)}</span>
     },
     { key: 'qualification', label: 'Qualification', className: 'min-w-[180px]', render: (v) => <span className="text-xs whitespace-nowrap">{String(v)}</span> },
     {
-      key: 'expertise', label: 'Expertise', className: 'min-w-[220px]',
+      key: 'expertise', label: 'Expertise', className: 'min-w-[280px]',
       render: (_, r) => (
-        <div className="flex flex-wrap gap-1 items-center">
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
           {r.expertise.slice(0, 2).map(e => <span key={e} className="px-2 py-0.5 bg-primary-50 text-primary-700 text-xs rounded-lg whitespace-nowrap">{e}</span>)}
           {r.expertise.length > 2 && <span className="text-xs text-slate-500 whitespace-nowrap">+{r.expertise.length - 2}</span>}
         </div>
@@ -112,7 +112,7 @@ const TrainerListPage: React.FC = () => {
         ].map(card => (
           <div key={card.label} className="flex items-start justify-between px-4 py-4 rounded-2xl border border-slate-100 bg-white shadow-sm hover:border-slate-200 hover:-translate-y-0.5 transition-all duration-300 group">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{card.label}</p>
+              <p className="text-xs font-semibold tracking-wider text-slate-500">{card.label}</p>
               <p className="text-2xl font-bold text-slate-900 mt-1.5 tracking-tight">{card.value}</p>
             </div>
             <div className={`p-3 rounded-xl ${card.iconBg} group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ml-3`}>

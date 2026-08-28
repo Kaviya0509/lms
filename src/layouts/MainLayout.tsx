@@ -1,15 +1,26 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import ToastContainer from '../components/common/Toast';
+import PageLoader from '../components/common/PageLoader';
 import { useAppSelector, useAppDispatch } from '../hooks/useAppDispatch';
 import { setSidebarCollapsed } from '../store/slices/uiSlice';
 
 const MainLayout: React.FC = () => {
   const collapsed = useAppSelector(s => s.ui.sidebarCollapsed);
   const dispatch  = useAppDispatch();
+  const location  = useLocation();
+  const [isPageLoading, setIsPageLoading] = useState(false);
+
+  useEffect(() => {
+    setIsPageLoading(true);
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#fdf1ee' }}>
@@ -25,7 +36,11 @@ const MainLayout: React.FC = () => {
       <div className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300
         ${collapsed ? 'lg:ml-16' : 'lg:ml-72'} ml-0`}>
         <Header />
-        <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto min-h-0">
+        <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto min-h-0 relative">
+          <AnimatePresence mode="wait">
+            {isPageLoading && <PageLoader />}
+          </AnimatePresence>
+
           <motion.div
             key={location.pathname}
             initial={{ opacity: 0, y: 12 }}
