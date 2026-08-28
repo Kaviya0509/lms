@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div
-      className="h-screen w-screen bg-primary-50 flex overflow-hidden select-none font-sans"
+      className="fixed inset-0 bg-primary-50 flex flex-col lg:flex-row overflow-hidden select-none font-sans"
       style={{
         backgroundImage: `url(${loginBg})`,
         backgroundSize: 'cover',
@@ -73,19 +73,19 @@ const LoginPage: React.FC = () => {
               Empower <span className="text-primary-500">People.</span>
             </h2>
             <div className="w-14 h-[3px] bg-primary-500 rounded-full mb-4"></div>
-            <p className="text-slate-600 text-xs xl:text-base max-w-none leading-relaxed font-semibold whitespace-nowrap">
+            <p className="text-slate-600 text-xs xl:text-base max-w-md leading-relaxed font-semibold">
               A unified workspace to manage trainers, trainees, courses, batches, enrollments, assessments, attendance and certificates.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 lg:flex-[0.7] bg-white rounded-[2rem] shadow-xl border border-[#e8e6dc]/20 relative z-20 flex flex-col justify-center py-8 px-6 sm:px-10 xl:px-12 h-[calc(100%-2rem)] my-4 mr-4 lg:my-6 lg:mr-6 lg:ml-0 overflow-hidden">
+      <div className="flex-1 lg:flex-[0.7] bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-xl border border-[#e8e6dc]/20 relative z-20 flex flex-col justify-center py-6 sm:py-8 px-5 sm:px-10 xl:px-12 h-[calc(100%-2rem)] mx-4 my-4 lg:mx-0 lg:my-6 lg:mr-6 lg:ml-0 overflow-y-auto scrollbar-hide">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-[400px] mx-auto"
+          className="w-full max-w-[400px] mx-auto my-auto"
         >
           <div className="lg:hidden flex items-center justify-center gap-2.5 mb-6">
             <div className="w-8 h-8 overflow-hidden flex-shrink-0 flex items-center">

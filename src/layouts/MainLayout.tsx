@@ -28,7 +28,7 @@ const MainLayout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#fdf1ee' }}>
+    <div className="flex fixed inset-0 overflow-hidden bg-[#fdf1ee]">
       {!collapsed && (
         <div
           className="fixed inset-0 bg-black/30 z-30 lg:hidden"
@@ -38,7 +38,7 @@ const MainLayout: React.FC = () => {
 
       <Sidebar />
 
-      <div className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300
+      <div className={`flex-1 flex flex-col h-full overflow-hidden transition-all duration-300
         ${collapsed ? 'lg:ml-16' : 'lg:ml-72'} ml-0`}>
         <Header />
         <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto min-h-0 relative">

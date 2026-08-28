@@ -59,7 +59,7 @@ const Sidebar: React.FC = () => {
   const isGroupActive = (group: NavGroup) => group.items.some(i => location.pathname.startsWith(i.path));
 
   return (
-    <aside className={`fixed left-0 top-0 h-screen bg-white border-r border-slate-200 flex flex-col z-40 transition-all duration-300
+    <aside className={`fixed inset-y-0 left-0 bg-white border-r border-slate-200 flex flex-col z-40 transition-all duration-300
       ${collapsed ? '-translate-x-full lg:translate-x-0 lg:w-16' : 'translate-x-0 w-72'}`}>
 
       <div className={`flex items-center px-4 py-4 border-b border-slate-100 flex-shrink-0 ${collapsed ? 'justify-center' : ''}`}>

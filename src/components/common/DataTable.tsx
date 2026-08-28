@@ -68,16 +68,16 @@ function DataTable<T extends Record<string, unknown>>({
     <div className="flex flex-col gap-3 h-full min-h-0">
       {(searchable || headerRight) && (
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             {searchable && (
-              <div className="relative">
+              <div className="relative w-full sm:w-auto">
                 <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={search}
                   onChange={e => { setSearch(e.target.value); setPage(1); }}
                   placeholder={searchPlaceholder}
-                  className="bg-white border border-slate-200 shadow-sm rounded-xl pl-9 pr-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all w-64"
+                  className="bg-white border border-slate-200 shadow-sm rounded-xl pl-9 pr-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all w-full sm:w-64"
                 />
               </div>
             )}

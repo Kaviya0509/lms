@@ -155,7 +155,7 @@ const DashboardPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 shadow-sm rounded-2xl p-5 flex items-center justify-between gap-4 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 shadow-sm rounded-2xl p-5 flex flex-col xl:flex-row xl:items-center items-start justify-between gap-4 overflow-hidden">
           <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-amber-100/60 pointer-events-none" />
           <div className="flex items-center gap-4 relative z-10">
             <div className="p-3 bg-amber-500 text-white rounded-2xl shadow-md shadow-amber-200">
@@ -171,7 +171,7 @@ const DashboardPage: React.FC = () => {
             Review <ArrowRight size={12} />
           </button>
         </div>
-        <div className="relative bg-gradient-to-br from-primary-50 to-violet-50 border border-primary-200 shadow-sm rounded-2xl p-5 flex items-center justify-between gap-4 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-primary-50 to-violet-50 border border-primary-200 shadow-sm rounded-2xl p-5 flex flex-col xl:flex-row xl:items-center items-start justify-between gap-4 overflow-hidden">
           <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-primary-100/60 pointer-events-none" />
           <div className="flex items-center gap-4 relative z-10">
             <div className="p-3 bg-primary-600 text-white rounded-2xl shadow-md shadow-primary-200">
