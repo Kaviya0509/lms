@@ -108,7 +108,7 @@ const DashboardPage: React.FC = () => {
       colors: ['#F4A261'],
       stroke: { curve: 'smooth' as const, width: 2 },
       fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0, stops: [0, 100] } },
-      xaxis: { categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'], labels: { style: { colors: '#64748b', fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'], labels: { style: { colors: '#64748b', fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { style: { colors: '#64748b', fontSize: '11px' } } },
     },
   };

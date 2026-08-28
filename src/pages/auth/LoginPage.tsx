@@ -13,7 +13,7 @@ import loginBg from '../../assets/login_background.png';
 import logoImg from '../../assets/logo.png';
 
 const schema = z.object({
-  email:    z.string().email('Enter a valid email address'),
+  email: z.string().email('Enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   remember: z.boolean().optional(),
 });
@@ -152,14 +152,14 @@ const LoginPage: React.FC = () => {
               {!isSubmitting && <ArrowRight className="w-4 h-4" strokeWidth={2.5} />}
             </button>
           </form>
- 
+
           <div className="mt-6">
             <div className="flex items-center gap-3 mb-6 text-xs text-slate-300">
               <div className="flex-1 h-px bg-slate-200/60" />
               <span className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">or</span>
               <div className="flex-1 h-px bg-slate-200/60" />
             </div>
- 
+
             <button type="button"
               className="w-full bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 rounded-md py-3 text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm active:scale-[0.99] cursor-pointer">
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-4 h-4" />
