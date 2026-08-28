@@ -184,6 +184,7 @@ const CourseCreatePage: React.FC = () => {
     { value: 'Mobile', label: 'Mobile Development' },
   ];
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const cw = commonForm.watch('mode');
   const publishChecks = [
     { label: 'Course information complete', done: true },

@@ -41,6 +41,7 @@ const TraineeFormPage: React.FC = () => {
     defaultValues: { type: 'fresher', status: 'active' },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const typeWatch = watch('type');
 
   useEffect(() => {

@@ -13,9 +13,14 @@ const MainLayout: React.FC = () => {
   const dispatch  = useAppDispatch();
   const location  = useLocation();
   const [isPageLoading, setIsPageLoading] = useState(false);
+  const [prevPath, setPrevPath] = useState(location.pathname);
+
+  if (location.pathname !== prevPath) {
+    setPrevPath(location.pathname);
+    setIsPageLoading(true);
+  }
 
   useEffect(() => {
-    setIsPageLoading(true);
     const timer = setTimeout(() => {
       setIsPageLoading(false);
     }, 450);
