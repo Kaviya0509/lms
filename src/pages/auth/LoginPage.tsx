@@ -98,14 +98,8 @@ const LoginPage: React.FC = () => {
           </div>
 
           <div className="text-center mb-8 select-none">
-            <div className="relative w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center mx-auto mb-4">
-              <div className="absolute inset-0 rounded-full border border-dashed border-primary-500/25" />
-              <div className="absolute inset-1.5 rounded-full border border-primary-500/10 bg-primary-50 flex items-center justify-center shadow-sm">
-                <div className="relative flex items-center justify-center text-primary-500">
-                  <Shield className="w-6 h-6 lg:w-7 lg:h-7" strokeWidth={1.5} />
-                  <Lock className="w-3 h-3 lg:w-3.5 lg:h-3.5 absolute top-[9px] lg:top-[11px]" strokeWidth={2.5} />
-                </div>
-              </div>
+            <div className="mx-auto mb-4 w-24 h-24 lg:w-28 lg:h-28 flex items-center justify-center">
+              <img src={logoImg} alt="Welcome Icon" className="w-full h-full object-contain drop-shadow-sm" />
             </div>
             <h2 className="text-2xl lg:text-3xl font-serif font-bold text-slate-900 mb-1.5">Welcome back</h2>
             <p className="text-slate-500 text-sm font-semibold">Sign in to your admin workspace</p>
