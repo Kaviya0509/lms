@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Monitor, Globe, CheckCircle2, ArrowRight, ArrowLeft, BookOpen,
-  Clock, Target, GraduationCap, FileText, Calendar, MapPin, Users, AlertCircle,
+  Clock, Target, GraduationCap, FileText, Calendar, MapPin, Users, AlertCircle, GripVertical, Trash2
 } from 'lucide-react';
 import { FormField, SelectField, TextareaField } from '../../components/forms';
 import Button from '../../components/common/Button';
@@ -19,21 +19,16 @@ const commonSchema = z.object({
   name:        z.string().min(5, 'Course name must be at least 5 characters'),
   code:        z.string().min(2, 'Course code required').regex(/^[A-Z0-9-]+$/, 'Use uppercase, numbers and hyphens'),
   description: z.string().min(20, 'Description must be at least 20 characters'),
-  category:    z.string().min(1, 'Select a category'),
-  level:       z.enum(['beginner', 'intermediate', 'advanced'] as const, { error: 'Select level' }),
-  duration:    z.coerce.number().min(1, 'Duration must be at least 1 hour').max(500),
+  duration:    z.coerce.number().min(1, 'Duration must be at least 1 month').max(120),
   objectives:  z.string().min(10, 'Add at least one objective'),
-  prerequisites: z.string().optional(),
-  skills:      z.string().min(2, 'Add at least one skill'),
   trainerId:   z.string().min(1, 'Assign a trainer'),
-  hasAssessment: z.boolean(),
-  hasCertificate: z.boolean(),
   mode:        z.enum(['online', 'offline', 'both'] as const, { error: 'Select delivery mode' }),
 });
 
 const onlineSchema = z.object({
-  modulesCount: z.coerce.number().min(1, 'At least 1 module required'),
-  lessonsCount: z.coerce.number().min(1, 'At least 1 lesson required'),
+  modules: z.array(z.object({
+    title: z.string().min(2, 'Module title is required')
+  })).min(1, 'At least one module required'),
   hasVideos: z.boolean(),
   hasQuiz: z.boolean(),
 });
@@ -83,20 +78,43 @@ const CourseCreatePage: React.FC = () => {
     resolver: zodResolver(commonSchema),
     defaultValues: existing ? {
       name: existing.name, code: existing.code, description: existing.description,
-      category: existing.category, level: existing.level, duration: existing.duration,
-      objectives: existing.objectives.join(', '), prerequisites: existing.prerequisites.join(', '),
-      skills: existing.skills.join(', '), trainerId: existing.trainerId ?? '',
-      hasAssessment: existing.hasAssessment, hasCertificate: existing.hasCertificate, mode: existing.mode,
+      duration: existing.duration,
+      objectives: existing.objectives.join(', '), trainerId: existing.trainerId ?? '',
+      mode: existing.mode,
     } : undefined,
   });
+  
   const onlineForm = useForm<OnlineFormInput, unknown, OnlineForm>({
     resolver: zodResolver(onlineSchema),
     defaultValues: (existing?.mode === 'online' || existing?.mode === 'both') ? {
-      modulesCount: existing.modules?.length || 1,
-      lessonsCount: existing.modules?.reduce((sum, m) => sum + m.lessons.length, 0) || 1,
+      modules: existing.modules?.map(m => ({ title: m.title })) || [{ title: '' }],
       hasVideos: true, hasQuiz: true,
-    } : undefined,
+    } : { modules: [{ title: '' }] },
   });
+
+  const { fields: moduleFields, append: appendModule, remove: removeModule, move: moveModule } = useFieldArray({
+    control: onlineForm.control,
+    name: 'modules'
+  });
+
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+
+  const onDragStart = (e: React.DragEvent, idx: number) => {
+    setDraggedIdx(idx);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  const onDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === idx) return;
+    moveModule(draggedIdx, idx);
+    setDraggedIdx(idx);
+  };
+  
+  const onDragEnd = () => {
+    setDraggedIdx(null);
+  };
+  
   const offlineForm = useForm<OfflineFormInput, unknown, OfflineForm>({
     resolver: zodResolver(offlineSchema),
     defaultValues: (existing?.mode === 'offline' || existing?.mode === 'both') ? {
@@ -106,8 +124,8 @@ const CourseCreatePage: React.FC = () => {
     } : { attendanceRequired: 80 },
   });
 
-  const trainerOptions = trainers.map(t => ({ value: t.id, label: `${t.name} (${t.expertise.slice(0,2).join(', ')})` }));
-  const locationOptions = locations.map(l => ({ value: l.id, label: l.name }));
+  const trainerOptions = trainers.map(t => ({ value: t.id, label: `${t.name} (${t.expertise.slice(0,2).join(', ')})` }))
+  const locationOptions = locations.map(l => ({ value: l.id, label: l.name }))
 
   const handleStep1 = commonForm.handleSubmit((data) => {
     setSelectedMode(data.mode);
@@ -141,20 +159,27 @@ const CourseCreatePage: React.FC = () => {
       name: common.name,
       code: common.code,
       description: common.description,
-      category: common.category,
-      categoryId: existing?.categoryId ?? common.category,
-      level: common.level,
+      category: existing?.category ?? 'General',
+      categoryId: existing?.categoryId ?? 'general',
+      level: existing?.level ?? 'beginner',
       duration: Number(common.duration),
       mode: common.mode,
       status: status === 'draft' ? 'draft' : 'published',
       objectives: common.objectives.split(',').map(s => s.trim()).filter(Boolean),
-      prerequisites: (common.prerequisites ?? '').split(',').map(s => s.trim()).filter(Boolean),
-      skills: common.skills.split(',').map(s => s.trim()).filter(Boolean),
+      prerequisites: existing?.prerequisites ?? [],
+      skills: existing?.skills ?? [],
       trainerId: common.trainerId,
       trainerName: trainer?.name,
-      hasAssessment: common.hasAssessment,
-      hasCertificate: common.hasCertificate,
-      modules: existing?.modules,
+      hasAssessment: existing?.hasAssessment ?? false,
+      hasCertificate: existing?.hasCertificate ?? false,
+      modules: (common.mode === 'online' || common.mode === 'both') 
+        ? onlineForm.getValues('modules').map((m, i) => ({
+            id: existing?.modules?.[i]?.id ?? `mod-${Date.now()}-${i}`,
+            title: m.title,
+            order: i + 1,
+            lessons: existing?.modules?.[i]?.lessons ?? []
+          }))
+        : existing?.modules,
       locationId: (selectedMode === 'offline' || selectedMode === 'both') ? offlineVals.locationId : undefined,
       startDate: (selectedMode === 'offline' || selectedMode === 'both') ? offlineVals.startDate : undefined,
       endDate: (selectedMode === 'offline' || selectedMode === 'both') ? offlineVals.endDate : undefined,
@@ -173,25 +198,13 @@ const CourseCreatePage: React.FC = () => {
     navigate('/courses');
   };
 
-  const categories = [
-    { value: 'AI & Generative AI', label: 'AI & Generative AI' },
-    { value: 'Web Development', label: 'Web Development' },
-    { value: 'Data Science', label: 'Data Science' },
-    { value: 'Design', label: 'UI/UX Design' },
-    { value: 'Backend', label: 'Backend Development' },
-    { value: 'Security', label: 'Cybersecurity' },
-    { value: 'Cloud', label: 'Cloud & DevOps' },
-    { value: 'Mobile', label: 'Mobile Development' },
-  ];
-
   // eslint-disable-next-line react-hooks/incompatible-library
   const cw = commonForm.watch('mode');
+  
   const publishChecks = [
     { label: 'Course information complete', done: true },
     { label: 'Trainer assigned', done: !!commonForm.watch('trainerId') },
     { label: 'Delivery mode configured', done: step >= 2 },
-    { label: `Assessment ${commonForm.watch('hasAssessment') ? 'enabled' : 'skipped'}`, done: true },
-    { label: `Certificate ${commonForm.watch('hasCertificate') ? 'configured' : 'not required'}`, done: true },
   ];
 
   return (
@@ -221,48 +234,34 @@ const CourseCreatePage: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <FormField label="Course Name" placeholder="Full Stack Web Development" required
                 {...commonForm.register('name')} error={commonForm.formState.errors.name?.message} />
-              <FormField label="Course Code" placeholder="FSWD-001" required hint="Uppercase, numbers and hyphens only"
+              <SelectField label="Course Code" placeholder="Select course code" required
+                options={[
+                  { value: 'FSWD-001', label: 'FSWD-001' },
+                  { value: 'FSWD-002', label: 'FSWD-002' },
+                  { value: 'AIG-001', label: 'AIG-001' },
+                  { value: 'DS-001', label: 'DS-001' },
+                  { value: 'UIX-001', label: 'UIX-001' },
+                  { value: 'BE-001', label: 'BE-001' },
+                  { value: 'SEC-001', label: 'SEC-001' },
+                  { value: 'CLD-001', label: 'CLD-001' },
+                  { value: 'MOB-001', label: 'MOB-001' },
+                ]}
                 {...commonForm.register('code')} error={commonForm.formState.errors.code?.message} />
             </div>
 
             <TextareaField label="Description" placeholder="Comprehensive course covering..." required rows={3}
               {...commonForm.register('description')} error={commonForm.formState.errors.description?.message} />
 
-            <div className="grid grid-cols-3 gap-4">
-              <SelectField label="Category" required placeholder="Select category" options={categories}
-                {...commonForm.register('category')} error={commonForm.formState.errors.category?.message} />
-              <SelectField label="Level" required placeholder="Select level"
-                options={[{value:'beginner',label:'Beginner'},{value:'intermediate',label:'Intermediate'},{value:'advanced',label:'Advanced'}]}
-                {...commonForm.register('level')} error={commonForm.formState.errors.level?.message} />
-              <FormField label="Duration (Hours)" type="number" min={1} required placeholder="120"
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="Duration (Months)" type="number" min={1} required placeholder="6"
                 icon={<Clock size={14} />} {...commonForm.register('duration')} error={commonForm.formState.errors.duration?.message} />
+              <SelectField label="Assign Trainer" required placeholder="Select trainer"
+                options={trainerOptions} icon={<GraduationCap size={14} />}
+                {...commonForm.register('trainerId')} error={commonForm.formState.errors.trainerId?.message} />
             </div>
 
             <FormField label="Learning Objectives" placeholder="Build production apps, Design RESTful APIs... (comma-separated)" required
               icon={<Target size={14} />} {...commonForm.register('objectives')} error={commonForm.formState.errors.objectives?.message} />
-            <FormField label="Prerequisites" placeholder="Basic HTML/CSS, JavaScript fundamentals..."
-              {...commonForm.register('prerequisites')} hint="Optional" />
-            <FormField label="Skills Covered" placeholder="React, Node.js, MongoDB, TypeScript..." required
-              {...commonForm.register('skills')} error={commonForm.formState.errors.skills?.message} />
-
-            <SelectField label="Assign Trainer" required placeholder="Select trainer"
-              options={trainerOptions} icon={<GraduationCap size={14} />}
-              {...commonForm.register('trainerId')} error={commonForm.formState.errors.trainerId?.message} />
-
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { name: 'hasAssessment' as const, label: 'Include Assessment', desc: 'Add quiz or final exam to this course' },
-                { name: 'hasCertificate' as const, label: 'Issue Certificate', desc: 'Auto-issue on course completion' },
-              ].map(f => (
-                <label key={f.name} className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100/70 transition-colors">
-                  <input type="checkbox" {...commonForm.register(f.name)} className="w-4 h-4 accent-primary-600" />
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">{f.label}</p>
-                    <p className="text-xs text-slate-500">{f.desc}</p>
-                  </div>
-                </label>
-              ))}
-            </div>
 
             <div>
               <p className="text-sm font-medium text-slate-700 mb-2">Delivery Mode <span className="text-red-500">*</span></p>
@@ -306,12 +305,38 @@ const CourseCreatePage: React.FC = () => {
                     <Monitor size={16} className="text-primary-600" />
                     <h3 className="text-sm font-bold text-slate-800">Online Settings</h3>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField label="Number of Modules" type="number" min={1} required placeholder="5"
-                      {...onlineForm.register('modulesCount')} error={onlineForm.formState.errors.modulesCount?.message} />
-                    <FormField label="Total Lessons" type="number" min={1} required placeholder="24"
-                      {...onlineForm.register('lessonsCount')} error={onlineForm.formState.errors.lessonsCount?.message} />
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-slate-900">Course Modules</label>
+                      <button type="button" onClick={() => appendModule({ title: '' })} className="text-xs font-semibold text-primary-600 hover:text-primary-700 bg-primary-50 px-2 py-1 rounded">+ Add Module</button>
+                    </div>
+                    <div className="space-y-2">
+                      {moduleFields.map((field, index) => (
+                        <div key={field.id} 
+                          draggable
+                          onDragStart={(e) => onDragStart(e, index)}
+                          onDragOver={(e) => onDragOver(e, index)}
+                          onDragEnd={onDragEnd}
+                          className={`flex items-center gap-3 p-3 bg-white border ${draggedIdx === index ? 'border-primary-500 opacity-50' : 'border-slate-200'} rounded-xl transition-colors cursor-move group`}
+                        >
+                          <div className="text-slate-400 group-hover:text-primary-500 transition-colors">
+                            <GripVertical size={16} />
+                          </div>
+                          <div className="flex-1">
+                            <input type="text" {...onlineForm.register(`modules.${index}.title` as const)} placeholder={`Module ${index + 1} Title`} className="w-full bg-transparent text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400" />
+                          </div>
+                          <button type="button" onClick={() => removeModule(index)} disabled={moduleFields.length === 1} className="text-slate-400 hover:text-red-500 disabled:opacity-30 transition-colors">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                      {onlineForm.formState.errors.modules && (
+                        <p className="text-red-500 text-xs flex items-center gap-1 mt-1"><AlertCircle size={12} /> {onlineForm.formState.errors.modules.message}</p>
+                      )}
+                    </div>
                   </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     {[
                       { name: 'hasVideos' as const, label: 'Include Video Lessons', desc: 'Upload or link video content' },
@@ -352,12 +377,38 @@ const CourseCreatePage: React.FC = () => {
                 <div className="p-4 bg-primary-600/5 border border-primary-500/20 rounded-xl">
                   <p className="text-xs text-primary-600">Configure the content structure for this online course.</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField label="Number of Modules" type="number" min={1} required placeholder="5"
-                    {...onlineForm.register('modulesCount')} error={onlineForm.formState.errors.modulesCount?.message} />
-                  <FormField label="Total Lessons" type="number" min={1} required placeholder="24"
-                    {...onlineForm.register('lessonsCount')} error={onlineForm.formState.errors.lessonsCount?.message} />
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-slate-900">Course Modules</label>
+                    <button type="button" onClick={() => appendModule({ title: '' })} className="text-xs font-semibold text-primary-600 hover:text-primary-700 bg-primary-50 px-2 py-1 rounded">+ Add Module</button>
+                  </div>
+                  <div className="space-y-2">
+                    {moduleFields.map((field, index) => (
+                      <div key={field.id} 
+                        draggable
+                        onDragStart={(e) => onDragStart(e, index)}
+                        onDragOver={(e) => onDragOver(e, index)}
+                        onDragEnd={onDragEnd}
+                        className={`flex items-center gap-3 p-3 bg-white border ${draggedIdx === index ? 'border-primary-500 opacity-50' : 'border-slate-200'} rounded-xl transition-colors cursor-move group`}
+                      >
+                        <div className="text-slate-400 group-hover:text-primary-500 transition-colors">
+                          <GripVertical size={16} />
+                        </div>
+                        <div className="flex-1">
+                          <input type="text" {...onlineForm.register(`modules.${index}.title` as const)} placeholder={`Module ${index + 1} Title`} className="w-full bg-transparent text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400" />
+                        </div>
+                        <button type="button" onClick={() => removeModule(index)} disabled={moduleFields.length === 1} className="text-slate-400 hover:text-red-500 disabled:opacity-30 transition-colors">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    {onlineForm.formState.errors.modules && (
+                      <p className="text-red-500 text-xs flex items-center gap-1 mt-1"><AlertCircle size={12} /> {onlineForm.formState.errors.modules.message}</p>
+                    )}
+                  </div>
                 </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   {[
                     { name: 'hasVideos' as const, label: 'Include Video Lessons', desc: 'Upload or link video content' },
@@ -411,9 +462,7 @@ const CourseCreatePage: React.FC = () => {
               <h3 className="text-sm font-semibold text-slate-900 mb-3">{commonForm.getValues('name')}</h3>
               {[
                 { label: 'Code', value: commonForm.getValues('code') },
-                { label: 'Category', value: commonForm.getValues('category') },
-                { label: 'Level', value: commonForm.getValues('level') },
-                { label: 'Duration', value: `${commonForm.getValues('duration')} hours` },
+                { label: 'Duration', value: `${commonForm.getValues('duration')} months` },
                 { label: 'Mode', value: commonForm.getValues('mode') },
                 { label: 'Trainer', value: trainers.find(t=>t.id===commonForm.getValues('trainerId'))?.name ?? '—' },
               ].map(f => (

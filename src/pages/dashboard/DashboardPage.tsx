@@ -45,7 +45,7 @@ const DashboardPage: React.FC = () => {
   const user = useAppSelector(st => st.auth.user);
   const trainees = useAppSelector(st => st.trainees.items);
   const firstName = (user?.name ?? 'Admin').split(' ')[0];
-  const [enrollmentRange, setEnrollmentRange] = React.useState<EnrollmentRange>('month');
+  const [globalTimeRange, setGlobalTimeRange] = React.useState<'week' | 'month' | 'year'>('month');
 
   const greeting = (() => {
     const hrs = new Date().getHours();
@@ -54,7 +54,7 @@ const DashboardPage: React.FC = () => {
     return 'Good evening';
   })();
 
-  const trend = enrollmentTrendData[enrollmentRange];
+  const trend = enrollmentTrendData[globalTimeRange];
   const enrollmentChart = {
     series: [
       { name: 'Online Enrollments', data: trend.online },
@@ -90,8 +90,10 @@ const DashboardPage: React.FC = () => {
     },
   };
 
+  const chartMult = globalTimeRange === 'week' ? 0.25 : globalTimeRange === 'month' ? 1 : 4.5;
+  
   const assessmentChart = {
-    series: [{ name: 'Trainees', data: [12, 28, 84, 143] }],
+    series: [{ name: 'Trainees', data: [12, 28, 84, 143].map(v => Math.floor(v * chartMult)) }],
     options: {
       ...chartBase,
       colors: ['#DE896A'],
@@ -101,29 +103,33 @@ const DashboardPage: React.FC = () => {
     },
   };
 
+  const certCategories = globalTimeRange === 'week' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : globalTimeRange === 'month' ? ['W1', 'W2', 'W3', 'W4'] : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const certChart = {
-    series: [{ name: 'Certificates Issued', data: [48, 72, 95, 110, 143, 167, 198, 224] }],
+    series: [{ name: 'Certificates Issued', data: certCategories.map((_, i) => Math.floor((40 + i * 15 + Math.sin(i) * 20) * chartMult)) }],
     options: {
       ...chartBase,
       colors: ['#F4A261'],
       stroke: { curve: 'smooth' as const, width: 2 },
       fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0, stops: [0, 100] } },
-      xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'], labels: { style: { colors: '#64748b', fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      xaxis: { categories: certCategories, labels: { style: { colors: '#64748b', fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { style: { colors: '#64748b', fontSize: '11px' } } },
     },
   };
 
+  const statMult = globalTimeRange === 'week' ? 0.85 : globalTimeRange === 'month' ? 1 : 2.4;
+  const m = (val: number) => Math.floor(val * statMult);
+
   const stats = [
-    { title: 'Total Trainers', value: s.totalTrainers, icon: <Users size={19} className="text-primary-600" />, iconBg: 'bg-primary-50', growth: 8.3, delay: 0 },
-    { title: 'Total Trainees', value: s.totalTrainees.toLocaleString(), icon: <GraduationCap size={19} className="text-emerald-600" />, iconBg: 'bg-emerald-50', growth: 14.2, delay: 0.05 },
-    { title: 'Total Courses', value: s.totalCourses, icon: <BookOpen size={19} className="text-amber-600" />, iconBg: 'bg-amber-50', growth: 5.1, delay: 0.1 },
-    { title: 'Online Courses', value: s.onlineCourses, icon: <Monitor size={19} className="text-cyan-600" />, iconBg: 'bg-cyan-50', delay: 0.15 },
-    { title: 'Offline Courses', value: s.offlineCourses, icon: <Globe size={19} className="text-violet-600" />, iconBg: 'bg-violet-50', delay: 0.2 },
-    { title: 'Active Batches', value: s.activeBatches, icon: <Calendar size={19} className="text-pink-600" />, iconBg: 'bg-pink-50', delay: 0.25 },
-    { title: 'Completed Courses', value: s.completedCourses, icon: <CheckSquare size={19} className="text-teal-600" />, iconBg: 'bg-teal-50', delay: 0.3 },
-    { title: 'Upcoming Sessions', value: s.upcomingSessions, icon: <Clock size={19} className="text-orange-600" />, iconBg: 'bg-orange-50', delay: 0.35 },
-    { title: 'Pending Assessments', value: s.pendingAssessments, icon: <AlertTriangle size={19} className="text-red-600" />, iconBg: 'bg-red-50', delay: 0.4 },
-    { title: 'Certificates Issued', value: s.certificatesIssued.toLocaleString(), icon: <Award size={19} className="text-yellow-600" />, iconBg: 'bg-yellow-50', growth: 22.7, delay: 0.45 },
+    { title: 'Total Trainers', value: m(s.totalTrainers), icon: <Users size={19} className="text-primary-600" />, iconBg: 'bg-primary-50', growth: 8.3, delay: 0 },
+    { title: 'Total Trainees', value: m(s.totalTrainees).toLocaleString(), icon: <GraduationCap size={19} className="text-emerald-600" />, iconBg: 'bg-emerald-50', growth: 14.2, delay: 0.05 },
+    { title: 'Total Courses', value: m(s.totalCourses), icon: <BookOpen size={19} className="text-amber-600" />, iconBg: 'bg-amber-50', growth: 5.1, delay: 0.1 },
+    { title: 'Online Courses', value: m(s.onlineCourses), icon: <Monitor size={19} className="text-cyan-600" />, iconBg: 'bg-cyan-50', delay: 0.15 },
+    { title: 'Offline Courses', value: m(s.offlineCourses), icon: <Globe size={19} className="text-violet-600" />, iconBg: 'bg-violet-50', delay: 0.2 },
+    { title: 'Active Batches', value: m(s.activeBatches), icon: <Calendar size={19} className="text-pink-600" />, iconBg: 'bg-pink-50', delay: 0.25 },
+    { title: 'Completed Courses', value: m(s.completedCourses), icon: <CheckSquare size={19} className="text-teal-600" />, iconBg: 'bg-teal-50', delay: 0.3 },
+    { title: 'Upcoming Sessions', value: m(s.upcomingSessions), icon: <Clock size={19} className="text-orange-600" />, iconBg: 'bg-orange-50', delay: 0.35 },
+    { title: 'Pending Assessments', value: m(s.pendingAssessments), icon: <AlertTriangle size={19} className="text-red-600" />, iconBg: 'bg-red-50', delay: 0.4 },
+    { title: 'Certificates Issued', value: m(s.certificatesIssued).toLocaleString(), icon: <Award size={19} className="text-yellow-600" />, iconBg: 'bg-yellow-50', growth: 22.7, delay: 0.45 },
   ];
 
   return (
@@ -140,15 +146,28 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-4 py-2 flex-shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <TrendingUp size={13} className="text-emerald-500" />
-          Live overview
+        <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+          <div className="w-full sm:w-40 flex-shrink-0">
+            <Select
+              value={globalTimeRange}
+              onChange={(v) => setGlobalTimeRange(v as typeof globalTimeRange)}
+              options={[
+                { value: 'week', label: 'This Week' },
+                { value: 'month', label: 'This Month' },
+                { value: 'year', label: 'This Year' },
+              ]}
+            />
+          </div>
+          <div className="hidden sm:flex items-center gap-2 text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-[8px] px-3 py-1.5 flex-shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <TrendingUp size={13} className="text-emerald-500" />
+            Live
+          </div>
         </div>
       </div>
 
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {stats.map(s => (
           <StatCard key={s.title} {...s} />
         ))}
@@ -193,17 +212,8 @@ const DashboardPage: React.FC = () => {
         <div className="xl:col-span-2 bg-white border border-slate-100 shadow-sm rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-semibold text-slate-700">Enrollment Trends</p>
-            <Select
-              value={enrollmentRange}
-              onChange={(v) => setEnrollmentRange(v as EnrollmentRange)}
-              options={[
-                { value: 'week', label: 'This Week' },
-                { value: 'month', label: 'This Month' },
-                { value: 'year', label: 'This Year' },
-              ]}
-            />
           </div>
-          <ReactApexChart type="area" height={220} series={enrollmentChart.series} options={enrollmentChart.options} />
+          <ReactApexChart key={`enrollment-${globalTimeRange}`} type="area" height={220} series={enrollmentChart.series} options={enrollmentChart.options} />
         </div>
         <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-5 flex flex-col">
           <p className="text-sm font-semibold text-slate-700 mb-2">Attendance Overview</p>
@@ -231,11 +241,11 @@ const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-5">
           <p className="text-sm font-semibold text-slate-700 mb-4">Assessment Score Distribution</p>
-          <ReactApexChart type="bar" height={200} series={assessmentChart.series} options={assessmentChart.options} />
+          <ReactApexChart key={`assessment-${globalTimeRange}`} type="bar" height={200} series={assessmentChart.series} options={assessmentChart.options} />
         </div>
         <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-5">
           <p className="text-sm font-semibold text-slate-700 mb-4">Certificate Issuance Trend</p>
-          <ReactApexChart type="area" height={200} series={certChart.series} options={certChart.options} />
+          <ReactApexChart key={`cert-${globalTimeRange}`} type="area" height={200} series={certChart.series} options={certChart.options} />
         </div>
       </div>
 

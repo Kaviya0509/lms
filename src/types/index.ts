@@ -15,16 +15,21 @@ export interface Trainer {
   id: string;
   name: string;
   email: string;
+  companyEmail?: string;
   mobile: string;
   qualification: string;
   expertise: string[];
   experience: number;
-  certifications: string[];
+  certifications: { name: string; image?: string }[];
   bio: string;
   availability: 'full-time' | 'part-time' | 'contract';
   status: 'active' | 'inactive';
   assignedCourses: string[];
   avatar?: string;
+  panNumber?: string;
+  aadharNumber?: string;
+  panImage?: string;
+  aadharImage?: string;
   joinedAt: string;
   totalBatches: number;
   rating: number;
@@ -35,7 +40,8 @@ export interface Trainee {
   name: string;
   email: string;
   mobile: string;
-  type: 'fresher' | 'professional';
+  type: 'fresher' | 'professional' | 'student';
+  officialEmail?: string;
   company?: string;
   experience?: number;
   location: string;
@@ -46,6 +52,10 @@ export interface Trainee {
   attendancePercentage: number;
   joinedAt: string;
   avatar?: string;
+  panNumber?: string;
+  aadharNumber?: string;
+  panImage?: string;
+  aadharImage?: string;
 }
 
 export type CourseMode = 'online' | 'offline' | 'both';

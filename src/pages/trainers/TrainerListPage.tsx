@@ -67,6 +67,21 @@ const TrainerListPage: React.FC = () => {
         </div>
       ),
     },
+    {
+      key: 'certifications', label: 'Certifications', className: 'min-w-[280px]',
+      render: (_, r) => (
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          {r.certifications?.length > 0 ? (
+            <>
+              {r.certifications.slice(0, 2).map(c => <span key={c.name} className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded-lg whitespace-nowrap">{c.name}</span>)}
+              {r.certifications.length > 2 && <span className="text-xs text-slate-500 whitespace-nowrap">+{r.certifications.length - 2}</span>}
+            </>
+          ) : (
+            <span className="text-slate-400 text-xs">—</span>
+          )}
+        </div>
+      ),
+    },
     { key: 'experience', label: 'Exp.', className: 'min-w-[80px]', render: (v) => <span className="whitespace-nowrap">{String(v)}y</span> },
     {
       key: 'rating', label: 'Rating', className: 'min-w-[100px]',
@@ -178,7 +193,7 @@ const TrainerListPage: React.FC = () => {
             </div>
             <div>
               <p className="text-xs text-slate-500 mb-2">Certifications</p>
-              <div className="flex flex-wrap gap-2">{viewTrainer.certifications.map(c => <span key={c} className="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-lg">{c}</span>)}</div>
+              <div className="flex flex-wrap gap-2">{viewTrainer.certifications.map(c => <span key={c.name} className="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-lg">{c.name}</span>)}</div>
             </div>
             <div>
               <p className="text-xs text-slate-500 mb-1">Bio</p>

@@ -1,17 +1,20 @@
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Users } from 'lucide-react';
 import { FormField, SelectField } from '../../components/forms';
+import { MultiSelectField } from '../../components/forms';
 import Button from '../../components/common/Button';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppDispatch';
 import { addBatch, updateBatch } from '../../store/slices/batchesSlice';
+import { updateTrainee } from '../../store/slices/traineesSlice';
 import { useToast } from '../../hooks/useToast';
 import type { Batch } from '../../types';
 
 const batchSchema = z.object({
+  id:         z.string().min(2, 'Batch ID is required'),
   name:       z.string().min(2, 'Name is required'),
   courseId:   z.string().min(1, 'Select a course'),
   trainerId:  z.string().min(1, 'Select a trainer'),
@@ -21,6 +24,7 @@ const batchSchema = z.object({
   endDate:    z.string().min(1, 'End date is required'),
   timing:     z.string().min(1, 'Timing is required'),
   status:     z.enum(['upcoming', 'active', 'completed'] as const),
+  traineeIds: z.array(z.string()).min(1, 'Please select at least one trainee'),
 });
 type BatchForm = z.infer<typeof batchSchema>;
 
@@ -34,24 +38,26 @@ const BatchFormPage: React.FC = () => {
   const batches = useAppSelector(s => s.batches.items);
   const courses = useAppSelector(s => s.courses.items);
   const trainers = useAppSelector(s => s.trainers.items);
+  const trainees = useAppSelector(s => s.trainees.items);
   const existing = id ? batches.find(b => b.id === id) : undefined;
   const isEdit = !!existing;
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<BatchForm>({
+  const { register, control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<BatchForm>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(batchSchema) as any,
-    defaultValues: { status: 'upcoming', capacity: 20 },
+    defaultValues: { id: '', status: 'upcoming', capacity: 20, traineeIds: [] },
   });
 
   useEffect(() => {
     if (existing) {
       reset({
-        name: existing.name, courseId: existing.courseId, trainerId: existing.trainerId,
+        id: existing.id, name: existing.name, courseId: existing.courseId, trainerId: existing.trainerId,
         location: existing.locationName ?? '', capacity: existing.seatCapacity, startDate: existing.startDate,
-        endDate: existing.endDate, timing: '', status: existing.status === 'cancelled' ? 'completed' : existing.status
+        endDate: existing.endDate, timing: '', status: existing.status === 'cancelled' ? 'completed' : existing.status,
+        traineeIds: trainees.filter(t => t.assignedBatch === existing.id).map(t => t.id)
       });
     }
-  }, [existing, reset]);
+  }, [existing, reset, trainees]);
 
   const onSubmit = async (data: BatchForm) => {
     await new Promise(r => setTimeout(r, 600));
@@ -60,7 +66,7 @@ const BatchFormPage: React.FC = () => {
     const trainer = trainers.find(t => t.id === data.trainerId);
 
     const batch: Batch = {
-      id: existing?.id ?? generateBatchId(),
+      id: data.id,
       name: data.name,
       courseId: data.courseId,
       courseName: course?.name ?? existing?.courseName ?? '',
@@ -78,6 +84,16 @@ const BatchFormPage: React.FC = () => {
     };
 
     dispatch(isEdit ? updateBatch(batch) : addBatch(batch));
+
+    // Update assigned trainees
+    if (data.traineeIds) {
+      data.traineeIds.forEach(tid => {
+        const trainee = trainees.find(t => t.id === tid);
+        if (trainee) dispatch(updateTrainee({ ...trainee, assignedBatch: batch.id }));
+      });
+      // Optionally remove trainees that were unassigned, but leaving this simple for now.
+    }
+
     toast.success(`Batch successfully ${isEdit ? 'updated' : 'added'}!`);
     navigate('/batches');
   };
@@ -97,6 +113,7 @@ const BatchFormPage: React.FC = () => {
       <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
         <form id="batch-form" onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <FormField label="Batch ID" required placeholder="BCH-2024-01" readOnly={isEdit} className={isEdit ? 'opacity-70 cursor-not-allowed bg-slate-100' : ''} {...register('id')} error={errors.id?.message} />
             <FormField label="Batch Name" required placeholder="Python Weekend Batch" {...register('name')} error={errors.name?.message} />
             <SelectField label="Course" required options={courses.filter(c => c.mode === 'offline').map(c => ({ value: c.id, label: c.name }))} {...register('courseId')} error={errors.courseId?.message} />
             <SelectField label="Trainer" required options={trainers.map(t => ({ value: t.id, label: t.name }))} {...register('trainerId')} error={errors.trainerId?.message} />
@@ -106,6 +123,24 @@ const BatchFormPage: React.FC = () => {
             <FormField label="Start Date" type="date" required {...register('startDate')} error={errors.startDate?.message} />
             <FormField label="End Date" type="date" required {...register('endDate')} error={errors.endDate?.message} />
             <FormField label="Timing" required placeholder="Sat-Sun, 10:00 AM - 01:00 PM" {...register('timing')} error={errors.timing?.message} />
+            
+            <div>
+              <Controller
+                control={control}
+                name="traineeIds"
+                render={({ field }) => (
+                  <MultiSelectField
+                    label="Assign Trainees"
+                    options={trainees.map(t => ({ value: t.id, label: t.name }))}
+                    value={field.value || []}
+                    onChange={field.onChange}
+                    placeholder="Select trainees to assign to this batch..."
+                    error={errors.traineeIds?.message}
+                    required
+                  />
+                )}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">

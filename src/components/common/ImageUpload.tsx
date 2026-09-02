@@ -1,6 +1,6 @@
 // src/components/common/ImageUpload.tsx
 import React, { useRef, useState } from 'react';
-import { UploadCloud, Trash2 } from 'lucide-react';
+import { UploadCloud, Trash2, Eye, X } from 'lucide-react';
 
 interface ImageUploadProps {
   value?: string;
@@ -11,6 +11,7 @@ interface ImageUploadProps {
 const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, label = "Profile Image" }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -82,16 +83,28 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, label = "Pro
             <div className="flex flex-col items-start gap-1.5 text-left">
               <p className="text-xs font-bold text-slate-800">Image Uploaded Successfully</p>
               <p className="text-[10px] text-slate-400">Click or drag new image to replace</p>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChange('');
-                }}
-                className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md border border-red-200/50 transition-colors"
-              >
-                <Trash2 size={12} /> Remove Image
-              </button>
+              <div className="flex items-center gap-2 mt-1">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPreview(true);
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-primary-700 hover:text-primary-800 bg-primary-50 hover:bg-primary-100 px-3 py-1.5 rounded-md border border-primary-200/50 transition-colors"
+                >
+                  <Eye size={12} /> Preview
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChange('');
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md border border-red-200/50 transition-colors"
+                >
+                  <Trash2 size={12} /> Remove
+                </button>
+              </div>
             </div>
           </div>
         ) : (
@@ -108,6 +121,35 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, label = "Pro
           </div>
         )}
       </div>
+
+      {/* Fullscreen Preview Modal */}
+      {showPreview && value && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={(e) => { e.stopPropagation(); setShowPreview(false); }}
+        >
+          <div className="relative max-w-5xl w-full max-h-[90vh] flex flex-col bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700 bg-slate-800/80">
+              <span className="text-sm font-semibold text-white">{label} Preview</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setShowPreview(false); }}
+                className="p-1.5 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="p-4 flex-1 overflow-auto flex items-center justify-center min-h-[300px]">
+              <img 
+                src={value} 
+                alt="Fullscreen Preview" 
+                className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg border border-slate-700/50" 
+                onClick={e => e.stopPropagation()} 
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

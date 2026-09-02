@@ -16,11 +16,14 @@ const traineeSchema = z.object({
   name:     z.string().min(2, 'Name is required'),
   email:    z.string().email('Valid email required'),
   mobile:   z.string().regex(/^\d{10}$/, '10-digit mobile required'),
-  type:     z.enum(['fresher', 'professional'] as const, { error: 'Select type' }),
+  type:     z.enum(['fresher', 'professional', 'student'] as const, { error: 'Select type' }),
   company:  z.string().optional(),
+  officialEmail: z.string().email('Valid email required').optional().or(z.literal('')),
   experience: z.coerce.number().min(0).optional(),
   location: z.string().min(2, 'Location is required'),
-  status:   z.enum(['active', 'inactive', 'pending'] as const),
+  status:   z.enum(['active', 'inactive', 'pending'] as const).optional(),
+  panNumber:     z.string().optional(),
+  aadharNumber:  z.string().optional(),
 });
 type TraineeForm = z.infer<typeof traineeSchema>;
 
@@ -34,6 +37,8 @@ const TraineeFormPage: React.FC = () => {
   const isEdit = !!existing;
 
   const [avatar, setAvatar] = useState<string>('');
+  const [panImage, setPanImage] = useState<string>('');
+  const [aadharImage, setAadharImage] = useState<string>('');
 
   const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<TraineeForm>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,10 +53,15 @@ const TraineeFormPage: React.FC = () => {
     if (existing) {
       reset({
         name: existing.name, email: existing.email, mobile: existing.mobile,
-        type: existing.type, company: existing.company ?? '', experience: existing.experience ?? 0,
-        location: existing.location, status: existing.status
+        type: existing.type, company: existing.company ?? '', 
+        officialEmail: existing.officialEmail ?? '',
+        experience: existing.experience ?? 0,
+        location: existing.location, status: existing.status,
+        panNumber: existing.panNumber ?? '', aadharNumber: existing.aadharNumber ?? ''
       });
       setAvatar(existing.avatar ?? '');
+      setPanImage(existing.panImage ?? '');
+      setAadharImage(existing.aadharImage ?? '');
     }
   }, [existing, reset]);
 
@@ -65,15 +75,20 @@ const TraineeFormPage: React.FC = () => {
       mobile: data.mobile,
       type: data.type,
       company: data.company,
+      officialEmail: data.officialEmail || undefined,
       experience: data.experience,
       location: data.location,
-      status: data.status,
+      status: data.status ?? existing?.status ?? 'active',
       enrolledCourses: existing?.enrolledCourses ?? [],
       assignedBatch: existing?.assignedBatch,
       overallProgress: existing?.overallProgress ?? 0,
       attendancePercentage: existing?.attendancePercentage ?? 0,
       joinedAt: existing?.joinedAt ?? new Date().toISOString().split('T')[0],
       avatar: avatar || undefined,
+      panNumber: data.panNumber || undefined,
+      aadharNumber: data.aadharNumber || undefined,
+      panImage: panImage || undefined,
+      aadharImage: aadharImage || undefined,
     };
 
     dispatch(isEdit ? updateTrainee(trainee) : addTrainee(trainee));
@@ -103,15 +118,25 @@ const TraineeFormPage: React.FC = () => {
             <FormField label="Email Address" type="email" required placeholder="trainee@email.com" {...register('email')} error={errors.email?.message} />
             <FormField label="Mobile Number" required placeholder="9876543210" {...register('mobile')} error={errors.mobile?.message} />
             <FormField label="Location" required placeholder="Chennai" {...register('location')} error={errors.location?.message} />
-            <SelectField label="Trainee Type" required options={[{value:'fresher',label:'Fresher'},{value:'professional',label:'Professional'}]} {...register('type')} error={errors.type?.message} />
-            <SelectField label="Account Status" required options={[{value:'active',label:'Active'},{value:'inactive',label:'Inactive'},{value:'pending',label:'Pending'}]} {...register('status')} error={errors.status?.message} />
+            <SelectField label="Trainee Type" required options={[{value:'fresher',label:'Fresher'},{value:'professional',label:'Professional'},{value:'student',label:'Student'}]} {...register('type')} error={errors.type?.message} />
+          </div>
+
+          <div className="pt-4 border-t border-slate-100">
+            <p className="text-sm font-semibold text-slate-900 mb-4">Identity Documents</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <FormField label="PAN Card Number" placeholder="ABCDE1234F" {...register('panNumber')} error={errors.panNumber?.message} />
+              <FormField label="Aadhar Card Number" placeholder="1234 5678 9012" {...register('aadharNumber')} error={errors.aadharNumber?.message} />
+              <ImageUpload label="PAN Card Image" value={panImage} onChange={setPanImage} />
+              <ImageUpload label="Aadhar Card Image" value={aadharImage} onChange={setAadharImage} />
+            </div>
           </div>
 
           {typeWatch === 'professional' && (
-            <div className="pt-2 border-t border-slate-100">
+            <div className="pt-4 border-t border-slate-100">
               <p className="text-sm font-semibold text-slate-900 mb-4">Professional Details</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <FormField label="Company Name" placeholder="TCS, Infosys..." {...register('company')} error={errors.company?.message} />
+                <FormField label="Official Email Address" type="email" placeholder="professional@company.com" {...register('officialEmail')} error={errors.officialEmail?.message} />
                 <FormField label="Experience (Years)" type="number" min={0} {...register('experience')} error={errors.experience?.message} />
               </div>
             </div>

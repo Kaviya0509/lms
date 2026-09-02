@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Pencil, Trash2, Users, Clock, Eye, CalendarClock, PlayCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2, Clock, Eye, CalendarClock, PlayCircle, CheckCircle2, XCircle } from 'lucide-react';
 import DataTable from '../../components/common/DataTable';
 import StatusBadge from '../../components/common/StatusBadge';
 import Button from '../../components/common/Button';
@@ -40,15 +40,42 @@ const BatchListPage: React.FC = () => {
     { key: 'trainerName', label: 'Trainer', className: 'min-w-[150px]', render: (v) => <span className="text-sm text-slate-700 whitespace-nowrap">{String(v)}</span> },
     { key: 'locationName', label: 'Location', className: 'min-w-[120px]', render: (v) => <span className="text-xs whitespace-nowrap">{v ? String(v) : 'Online'}</span> },
     {
-      key: 'enrolledCount', label: 'Enrollment', className: 'min-w-[100px]',
-      render: (_, r) => (
-        <div className="flex items-center gap-1.5 whitespace-nowrap">
-          <Users size={13} className="text-slate-400" />
-          <span className="text-xs font-semibold text-slate-700">{r.enrolledCount}</span>
-          <span className="text-xs text-slate-400">/</span>
-          <span className="text-xs text-slate-400">{r.seatCapacity}</span>
-        </div>
-      ),
+      key: 'trainees', label: 'Trainees', className: 'min-w-[160px]',
+      render: (_, r) => {
+        const batchTrainees = trainees.filter(t => t.assignedBatch === r.id);
+        const displayTrainees = batchTrainees.slice(0, 3);
+        const remaining = batchTrainees.length - 3;
+        
+        return (
+          <div className="flex items-center gap-3 whitespace-nowrap">
+            <div className="flex -space-x-2">
+              {displayTrainees.map((t, i) => (
+                t.avatar ? (
+                  <img key={i} src={t.avatar} alt={t.name} className="w-7 h-7 rounded-full border-2 border-white object-cover" title={t.name} />
+                ) : (
+                  <div key={i} className={`w-7 h-7 rounded-full border-2 border-white bg-gradient-to-br ${getAvatarColor(t.name)} flex items-center justify-center text-white text-[9px] font-bold`} title={t.name}>
+                    {getInitials(t.name)}
+                  </div>
+                )
+              ))}
+              {remaining > 0 && (
+                <div className="w-7 h-7 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-slate-600 text-[10px] font-medium" title={`${remaining} more trainees`}>
+                  +{remaining}
+                </div>
+              )}
+              {batchTrainees.length === 0 && (
+                <span className="text-[11px] text-slate-400">No trainees</span>
+              )}
+            </div>
+            {batchTrainees.length > 0 && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-semibold text-slate-700">{r.enrolledCount}</span>
+                <span className="text-[10px] text-slate-400">/ {r.seatCapacity}</span>
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     { key: 'startDate', label: 'Period', className: 'min-w-[180px]', sortable: false, render: (_, r) => <span className="text-xs whitespace-nowrap">{formatDate(r.startDate)} → {formatDate(r.endDate)}</span> },
     { key: 'attendanceRequired', label: 'Attendance Req.', className: 'min-w-[120px]', render: (v) => <span className="text-xs whitespace-nowrap">{String(v)}%</span> },
@@ -161,6 +188,7 @@ const BatchListPage: React.FC = () => {
                     <thead>
                       <tr className="bg-slate-50/70 border-b border-slate-100 sticky top-0 z-10">
                         <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Name</th>
+                        <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contact</th>
                         <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type</th>
                         <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Progress</th>
                         <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Attendance</th>
@@ -169,21 +197,26 @@ const BatchListPage: React.FC = () => {
                     <tbody>
                       {trainees.filter(t => t.assignedBatch === selectedBatch.id).map(t => (
                         <tr key={t.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
-                          <td className="py-2.5 px-4 text-sm">
-                            <div className="flex items-center gap-2.5">
-                              {t.avatar ? (
-                                <img src={t.avatar} alt={t.name} className="w-8 h-8 rounded-xl object-cover flex-shrink-0" />
-                              ) : (
-                                <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${getAvatarColor(t.name)} flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0`}>
-                                  {getInitials(t.name)}
+                            <td className="py-2.5 px-4 text-sm">
+                              <div className="flex items-center gap-2.5">
+                                {t.avatar ? (
+                                  <img src={t.avatar} alt={t.name} className="w-8 h-8 rounded-xl object-cover flex-shrink-0" />
+                                ) : (
+                                  <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${getAvatarColor(t.name)} flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0`}>
+                                    {getInitials(t.name)}
+                                  </div>
+                                )}
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-slate-900 text-xs">{t.name}</span>
                                 </div>
-                              )}
-                              <div className="flex flex-col">
-                                <span className="font-semibold text-slate-900 text-xs">{t.name}</span>
-                                <span className="text-[10px] text-slate-500">{t.email}</span>
                               </div>
-                            </div>
-                          </td>
+                            </td>
+                            <td className="py-2.5 px-4">
+                                <div className="flex flex-col">
+                                  <span className="text-[10px] text-slate-700">{t.phone}</span>
+                                  <span className="text-[10px] text-slate-500">{t.email}</span>
+                                </div>
+                            </td>
                           <td className="py-2.5 px-4">
                             <StatusBadge status={t.type === 'fresher' ? 'info' : 'warning'} label={t.type === 'fresher' ? 'Fresher' : 'Pro'} />
                           </td>
@@ -282,6 +315,7 @@ const BatchListPage: React.FC = () => {
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10">
                           <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Name</th>
+                          <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contact</th>
                           <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type</th>
                           <th className="py-2.5 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Progress</th>
                         </tr>
@@ -300,9 +334,14 @@ const BatchListPage: React.FC = () => {
                                 )}
                                 <div className="flex flex-col">
                                   <span className="font-semibold text-slate-900 text-xs">{t.name}</span>
-                                  <span className="text-[10px] text-slate-500">{t.email}</span>
                                 </div>
                               </div>
+                            </td>
+                            <td className="py-2.5 px-4">
+                                <div className="flex flex-col">
+                                  <span className="text-[10px] text-slate-700">{t.phone}</span>
+                                  <span className="text-[10px] text-slate-500">{t.email}</span>
+                                </div>
                             </td>
                             <td className="py-2.5 px-4">
                               <StatusBadge status={t.type === 'fresher' ? 'info' : 'warning'} label={t.type === 'fresher' ? 'Fresher' : 'Pro'} />

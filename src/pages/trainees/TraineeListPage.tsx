@@ -18,7 +18,7 @@ const TraineeListPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const [viewTrainee, setViewTrainee] = useState<Trainee | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<'all' | 'fresher' | 'professional'>('all');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'fresher' | 'professional' | 'student'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'pending'>('all');
   const toast = useToast();
   const navigate = useNavigate();
@@ -56,14 +56,20 @@ const TraineeListPage: React.FC = () => {
     },
     {
       key: 'email', label: 'Email', className: 'min-w-[220px]',
-      render: (v) => <span className="text-xs text-slate-600 font-medium whitespace-nowrap">{String(v)}</span>
+      render: (_, r) => (
+        <div className="flex flex-col gap-0.5">
+          <span className="text-xs text-slate-700 font-medium whitespace-nowrap">{r.email}</span>
+          {r.officialEmail && <span className="text-[10px] text-primary-600 font-medium whitespace-nowrap truncate max-w-[200px]">🏢 {r.officialEmail}</span>}
+        </div>
+      )
     },
     {
       key: 'type', label: 'Type', className: 'min-w-[120px]',
-      render: (_, r) => <StatusBadge status={r.type === 'fresher' ? 'info' : 'warning'} label={r.type === 'fresher' ? 'Fresher' : 'Professional'} />,
+      render: (_, r) => <StatusBadge status={r.type === 'fresher' ? 'info' : r.type === 'student' ? 'purple' : 'warning'} label={r.type === 'fresher' ? 'Fresher' : r.type === 'student' ? 'Student' : 'Professional'} />,
       filterOptions: [
         { value: 'fresher', label: 'Fresher' },
-        { value: 'professional', label: 'Professional' }
+        { value: 'professional', label: 'Professional' },
+        { value: 'student', label: 'Student' }
       ]
     },
     { key: 'location', label: 'Location', className: 'min-w-[120px]', render: (v) => <span className="text-xs whitespace-nowrap">{String(v)}</span> },
@@ -113,7 +119,7 @@ const TraineeListPage: React.FC = () => {
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex bg-slate-100/60 border border-slate-200 rounded-lg p-1 gap-1">
-          {(['all', 'fresher', 'professional'] as const).map(f => (
+          {(['all', 'fresher', 'professional', 'student'] as const).map(f => (
             <button key={f} onClick={() => setTypeFilter(f)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-all ${typeFilter === f ? 'bg-primary-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}>
               {f}
