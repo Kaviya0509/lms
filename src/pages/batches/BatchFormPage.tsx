@@ -28,7 +28,6 @@ const batchSchema = z.object({
 });
 type BatchForm = z.infer<typeof batchSchema>;
 
-const generateBatchId = () => `batch-${Date.now()}`;
 
 const BatchFormPage: React.FC = () => {
   const { id } = useParams();

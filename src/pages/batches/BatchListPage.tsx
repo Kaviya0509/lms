@@ -213,7 +213,7 @@ const BatchListPage: React.FC = () => {
                             </td>
                             <td className="py-2.5 px-4">
                                 <div className="flex flex-col">
-                                  <span className="text-[10px] text-slate-700">{t.phone}</span>
+                                  <span className="text-[10px] text-slate-700">{t.mobile}</span>
                                   <span className="text-[10px] text-slate-500">{t.email}</span>
                                 </div>
                             </td>
@@ -339,7 +339,7 @@ const BatchListPage: React.FC = () => {
                             </td>
                             <td className="py-2.5 px-4">
                                 <div className="flex flex-col">
-                                  <span className="text-[10px] text-slate-700">{t.phone}</span>
+                                  <span className="text-[10px] text-slate-700">{t.mobile}</span>
                                   <span className="text-[10px] text-slate-500">{t.email}</span>
                                 </div>
                             </td>
